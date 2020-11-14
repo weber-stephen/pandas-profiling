@@ -18,7 +18,6 @@
 </p>
 
 Generates profile reports from a pandas `DataFrame`. 
-
 The pandas `df.describe()` function is great but a little basic for serious exploratory data analysis. 
 `pandas_profiling` extends the pandas DataFrame with `df.profile_report()` for quick data analysis.
 
@@ -83,7 +82,6 @@ The following examples can give you an impression of what the package can do:
 * [Colors](https://pandas-profiling.github.io/pandas-profiling/examples/master/colors/colors_report.html) (a simple colors dataset)
 
 Specific features:
-
 * [Russian Vocabulary](https://pandas-profiling.github.io/pandas-profiling/examples/master/features/russian_vocabulary.html) (demonstrates text analysis)
 * [Cats and Dogs](https://pandas-profiling.github.io/pandas-profiling/examples/master/features/cats-and-dogs.html) (demonstrates image analysis from the file system)
 * [Celebrity Faces](https://pandas-profiling.github.io/pandas-profiling/examples/master/features/celebrity-faces.html) (demonstrates image analysis with EXIF information)
@@ -91,7 +89,6 @@ Specific features:
 * [Orange prices](https://pandas-profiling.github.io/pandas-profiling/examples/master/features/united_report.html) and [Coal prices](https://pandas-profiling.github.io/pandas-profiling/examples/master/features/flatly_report.html) (showcases report themes)
 
 Tutorials:
-
 * [Tutorial: report structure using Kaggle data (advanced)](https://pandas-profiling.github.io/pandas-profiling/examples/master/tutorials/modify_report_structure.ipynb) (modify the report's structure) [![Open In Colab](https://camo.githubusercontent.com/52feade06f2fecbf006889a904d221e6a730c194/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/pandas-profiling/pandas-profiling/blob/master/examples/tutorials/modify_report_structure.ipynb) [![Binder](https://camo.githubusercontent.com/483bae47a175c24dfbfc57390edd8b6982ac5fb3/68747470733a2f2f6d7962696e6465722e6f72672f62616467655f6c6f676f2e737667)](https://mybinder.org/v2/gh/pandas-profiling/pandas-profiling/master?filepath=examples%2Ftutorials%2Fmodify_report_structure.ipynb)
 
 
@@ -105,15 +102,12 @@ Tutorials:
 
 You can install using the pip package manager by running
 
-```sh
-pip install pandas-profiling[notebook]
-```
-
+    pip install pandas-profiling[notebook]
+    
 Alternatively, you could install the latest version directly from Github:
 
-```sh
-pip install https://github.com/pandas-profiling/pandas-profiling/archive/master.zip
-```    
+    pip install https://github.com/pandas-profiling/pandas-profiling/archive/master.zip
+    
     
 ### Using conda
 
@@ -122,28 +116,22 @@ pip install https://github.com/pandas-profiling/pandas-profiling/archive/master.
  
 You can install using the conda package manager by running
 
-```sh
-conda install -c conda-forge pandas-profiling
-```
+    conda install -c conda-forge pandas-profiling
 
 ### From source
 
 Download the source code by cloning the repository or by pressing ['Download ZIP'](https://github.com/pandas-profiling/pandas-profiling/archive/master.zip) on this page. 
+Install by navigating to the proper directory and running
 
-Install by navigating to the proper directory and running:
-
-```sh
-python setup.py install
-```
-
+    python setup.py install
+    
 ## Documentation
 
 The documentation for `pandas_profiling` can be found [here](https://pandas-profiling.github.io/pandas-profiling/docs/master/rtd/). Previous documentation is still available [here](https://pandas-profiling.github.io/pandas-profiling/docs/master/).
 
 ### Getting started
 
-Start by loading in your pandas DataFrame, e.g. by using:
-
+Start by loading in your pandas DataFrame, e.g. by using
 ```python
 import numpy as np
 import pandas as pd
@@ -177,7 +165,6 @@ There are two interfaces (see animations below): through widgets and through a H
 <img alt="Notebook Widgets" src="https://pandas-profiling.github.io/pandas-profiling/docs/master/assets/widgets.gif" width="800" />
 
 This is achieved by simply displaying the report. In the Jupyter Notebook, run:
-
 ```python
 profile.to_widgets()
 ```
@@ -198,8 +185,7 @@ If you want to generate a HTML report file, save the `ProfileReport` to an objec
 ```python
 profile.to_file("your_report.html")
 ```
-
-Alternatively, you can obtain the data as JSON:
+Alternatively, you can obtain the data as json:
 ```python
 # As a string
 json_data = profile.to_json()
@@ -211,9 +197,7 @@ profile.to_file("your_report.json")
 ### Large datasets
 
 Version 2.4 introduces minimal mode. 
-
 This is a default configuration that disables expensive computations (such as correlations and dynamic binning).
-
 Use the following syntax:
 
 ```python
@@ -223,13 +207,11 @@ profile.to_file("output.html")
 
 ### Command line usage
 
-For standard formatted CSV files that can be read immediately by pandas, you can use the `pandas_profiling` executable. 
+For standard formatted CSV files that can be read immediately by pandas, you can use the `pandas_profiling` executable. Run
 
-Run the following for information about options and arguments.
+	pandas_profiling -h
 
-```sh
-pandas_profiling -h
-```
+for information about options and arguments.
 
 ### Advanced usage
 
@@ -248,7 +230,7 @@ profile = df.profile_report(title='Pandas Profiling Report', plot={'histogram': 
 profile.to_file("output.html")
 ```
 
-## Supporting open source
+# Supporting open source
 
 Maintaining and developing the open-source code for pandas-profiling, with millions of downloads and thousands of users, would not be possible with support of our gracious sponsors.
 
@@ -286,7 +268,6 @@ Future versions of `pandas-profiling` will have extended type support through `v
 ## Contributing
 
 Read on getting involved in the [Contribution Guide](https://pandas-profiling.github.io/pandas-profiling/docs/master/rtd/pages/contribution_guidelines.html).
-
 A low threshold place to ask questions or start contributing is by reaching out on the pandas-profiling Slack. [Join the Slack community](https://join.slack.com/t/pandas-profiling/shared_invite/zt-hfy3iwp2-qEJSItye5QBZf8YGFMaMnQ).
 
 ## Editor integration
@@ -325,7 +306,7 @@ Other editor integrations may be contributed via pull requests.
 
 ## Dependencies
 
-The profile report is written in HTML and CSS, which means `pandas-profiling` requires a modern browser. 
+The profile report is written in HTML and CSS, which means pandas-profiling requires a modern browser. 
 
 You need [Python 3](https://python3statement.org/) to run this package. Other dependencies can be found in the requirements files:
 
