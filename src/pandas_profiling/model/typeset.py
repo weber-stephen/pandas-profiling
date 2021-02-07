@@ -7,8 +7,7 @@ import pandas as pd
 import visions
 from pandas.api import types as pdt
 from visions.relations import IdentityRelation, InferenceRelation
-from visions.utils import nullable_series_contains
-from visions.utils.series_utils import series_not_empty
+from visions.backends.pandas.series_utils import series_handle_nulls as  nullable_series_contains, series_not_empty
 
 from pandas_profiling.config import config
 from pandas_profiling.model.typeset_relations import (
@@ -28,12 +27,11 @@ class Unsupported(visions.Generic):
 
 
 class Numeric(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
+    @staticmethod
+    def get_relations():
         return [
-            IdentityRelation(cls, Unsupported),
+            IdentityRelation(Unsupported),
             InferenceRelation(
-                cls,
                 Categorical,
                 relationship=category_is_numeric,
                 transformer=category_to_numeric,
@@ -60,10 +58,10 @@ def to_date(series):
 
 
 class DateTime(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
+    @staticmethod
+    def get_relations():
         return [
-            IdentityRelation(cls, Unsupported),
+            IdentityRelation(Unsupported),
         ]
 
     @classmethod
@@ -72,12 +70,11 @@ class DateTime(visions.VisionsBaseType):
 
 
 class Categorical(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
+    @staticmethod
+    def get_relations():
         return [
-            IdentityRelation(cls, Unsupported),
+            IdentityRelation(Unsupported),
             InferenceRelation(
-                cls,
                 Numeric,
                 relationship=numeric_is_category,
                 transformer=to_category,
@@ -98,11 +95,11 @@ class Categorical(visions.VisionsBaseType):
 
 
 class Boolean(visions.VisionsBaseType):
-    @classmethod
+    @staticmethod
     def get_relations(cls):
         # Numeric [0, 1] goes via Categorical with distinct_count_without_nan <= 2
         return [
-            IdentityRelation(cls, Unsupported),
+            IdentityRelation(Unsupported),
             InferenceRelation(
                 cls,
                 Categorical,
@@ -125,10 +122,9 @@ class Boolean(visions.VisionsBaseType):
 
 
 class URL(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
-        relations = [IdentityRelation(cls, Categorical)]
-        return relations
+    @staticmethod
+    def get_relations():
+        return [IdentityRelation(Categorical)]
 
     @classmethod
     @nullable_series_contains
@@ -142,10 +138,9 @@ class URL(visions.VisionsBaseType):
 
 
 class Path(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
-        relations = [IdentityRelation(cls, Categorical)]
-        return relations
+    @staticmethod
+    def get_relations():
+        return [IdentityRelation(Categorical)]
 
     @classmethod
     @nullable_series_contains
@@ -158,10 +153,9 @@ class Path(visions.VisionsBaseType):
 
 
 class File(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
-        relations = [IdentityRelation(cls, Path)]
-        return relations
+    @staticmethod
+    def get_relations():
+        return [IdentityRelation(Path)]
 
     @classmethod
     @nullable_series_contains
@@ -170,10 +164,9 @@ class File(visions.VisionsBaseType):
 
 
 class Image(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
-        relations = [IdentityRelation(cls, File)]
-        return relations
+    @staticmethod
+    def get_relations():
+        return [IdentityRelation(File)]
 
     @classmethod
     @nullable_series_contains
@@ -182,9 +175,9 @@ class Image(visions.VisionsBaseType):
 
 
 class Complex(visions.VisionsBaseType):
-    @classmethod
-    def get_relations(cls):
-        return [IdentityRelation(cls, Numeric)]
+    @staticmethod
+    def get_relations():
+        return [IdentityRelation(Numeric)]
 
     @classmethod
     @nullable_series_contains

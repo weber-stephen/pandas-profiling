@@ -3,7 +3,8 @@ import functools
 import numpy as np
 import pandas as pd
 from pandas.api import types as pdt
-from visions.utils import func_nullable_series_contains
+# from visions.utils import func_nullable_series_contains
+from visions.backends.pandas.series_utils import series_handle_nulls as func_nullable_series_contains
 
 from pandas_profiling.config import config
 
