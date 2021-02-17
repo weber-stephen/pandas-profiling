@@ -6,15 +6,21 @@ from visions import VisionsBaseType
 
 from pandas_profiling.model.handler import Handler
 from pandas_profiling.model.summary_algorithms import (
+    describe_boolean_spark_1d,
     describe_categorical_1d,
+    describe_categorical_spark_1d,
     describe_counts,
+    describe_counts_spark,
     describe_date_1d,
     describe_file_1d,
     describe_generic,
+    describe_generic_spark,
     describe_image_1d,
     describe_numeric_1d,
+    describe_numeric_spark_1d,
     describe_path_1d,
     describe_supported,
+    describe_supported_spark,
     describe_url_1d,
 )
 from pandas_profiling.model.typeset import (
@@ -26,6 +32,10 @@ from pandas_profiling.model.typeset import (
     Image,
     Numeric,
     Path,
+    SparkBoolean,
+    SparkCategorical,
+    SparkNumeric,
+    SparkUnsupported,
     Unsupported,
 )
 
@@ -36,7 +46,7 @@ class BaseSummarizer(Handler):
     Can be used to define custom summarizations
     """
 
-    def summarize(self, series: pd.Series, dtype: Type[VisionsBaseType]) -> dict:
+    def summarize(self, series, dtype: Type[VisionsBaseType]) -> dict:
         """
 
         Returns:
@@ -77,6 +87,32 @@ class PandasProfilingSummarizer(BaseSummarizer):
             ],
             Image: [
                 describe_image_1d,
+            ],
+            SparkUnsupported: [
+                describe_counts_spark,
+                describe_generic_spark,
+                describe_supported_spark,
+            ],
+            SparkNumeric: [
+                # need to include everything here, because we don't
+                describe_counts_spark,
+                describe_generic_spark,
+                describe_supported_spark,
+                describe_numeric_spark_1d,
+            ],
+            SparkCategorical: [
+                # need to include everything here, because we don't
+                describe_counts_spark,
+                describe_generic_spark,
+                describe_supported_spark,
+                describe_categorical_spark_1d,
+            ],
+            SparkBoolean: [
+                # need to include everything here, because we don't
+                describe_counts_spark,
+                describe_generic_spark,
+                describe_supported_spark,
+                describe_boolean_spark_1d,
             ],
         }
         super().__init__(summary_map, typeset, *args, **kwargs)
