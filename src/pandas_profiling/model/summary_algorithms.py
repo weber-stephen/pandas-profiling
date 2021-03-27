@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 import numpy as np
 import pandas as pd
 from pandas.core.arrays.integer import _IntegerDtype
-from visions.backends.pandas.series_utils import series_handle_nulls as func_nullable_series_contains
+from visions.backends.pandas.series_utils import series_handle_nulls
 
 from pandas_profiling.config import config
 from pandas_profiling.model.summary_helpers import (
@@ -164,7 +164,7 @@ def numeric_stats_numpy(present_values, series, series_description):
 
 
 @series_hashable
-@func_nullable_series_contains
+@series_handle_nulls
 def describe_numeric_1d(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
     """Describe a numeric series.
     Args:
@@ -246,7 +246,7 @@ def describe_numeric_1d(series: pd.Series, summary: dict) -> Tuple[pd.Series, di
 
 
 @series_hashable
-@func_nullable_series_contains
+@series_handle_nulls
 def describe_date_1d(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
     """Describe a date series.
 
@@ -278,7 +278,7 @@ def describe_date_1d(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]
 
 
 @series_hashable
-@func_nullable_series_contains
+@series_handle_nulls
 def describe_categorical_1d(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
     """Describe a categorical series.
 

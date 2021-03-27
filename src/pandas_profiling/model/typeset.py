@@ -6,8 +6,8 @@ from urllib.parse import urlparse
 import pandas as pd
 import visions
 from pandas.api import types as pdt
+from visions.backends.pandas.series_utils import series_handle_nulls, series_not_empty
 from visions.relations import IdentityRelation, InferenceRelation
-from visions.backends.pandas.series_utils import series_handle_nulls as  nullable_series_contains, series_not_empty
 
 from pandas_profiling.config import config
 from pandas_profiling.model.typeset_relations import (
@@ -38,10 +38,10 @@ class Numeric(visions.VisionsBaseType):
             ),
         ]
 
-    @classmethod
-    @nullable_series_contains
+    @staticmethod
     @series_not_empty
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         return pdt.is_numeric_dtype(series) and not pdt.is_bool_dtype(series)
 
 
@@ -64,8 +64,8 @@ class DateTime(visions.VisionsBaseType):
             IdentityRelation(Unsupported),
         ]
 
-    @classmethod
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    def contains_op(series: pd.Series, state: dict) -> bool:
         return pdt.is_datetime64_any_dtype(series)
 
 
@@ -81,17 +81,17 @@ class Categorical(visions.VisionsBaseType):
             ),
         ]
 
-    @classmethod
+    @staticmethod
     @series_not_empty
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         is_valid_dtype = pdt.is_categorical_dtype(series) and not pdt.is_bool_dtype(
             series
         )
         if is_valid_dtype:
             return True
 
-        return series_is_string(series)
+        return series_is_string(series, state)
 
 
 class Boolean(visions.VisionsBaseType):
@@ -107,10 +107,10 @@ class Boolean(visions.VisionsBaseType):
             ),
         ]
 
-    @classmethod
+    @staticmethod
     @series_not_empty
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         if pdt.is_object_dtype(series):
             try:
                 return series.isin({True, False}).all()
@@ -125,9 +125,9 @@ class URL(visions.VisionsBaseType):
     def get_relations():
         return [IdentityRelation(Categorical)]
 
-    @classmethod
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         # TODO: use coercion utils
         try:
             url_gen = (urlparse(x) for x in series)
@@ -141,9 +141,9 @@ class Path(visions.VisionsBaseType):
     def get_relations():
         return [IdentityRelation(Categorical)]
 
-    @classmethod
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         # TODO: use coercion utils
         try:
             return all(os.path.isabs(p) for p in series)
@@ -156,9 +156,9 @@ class File(visions.VisionsBaseType):
     def get_relations():
         return [IdentityRelation(Path)]
 
-    @classmethod
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         return all(os.path.exists(p) for p in series)
 
 
@@ -167,9 +167,9 @@ class Image(visions.VisionsBaseType):
     def get_relations():
         return [IdentityRelation(File)]
 
-    @classmethod
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         return all(imghdr.what(p) for p in series)
 
 
@@ -178,9 +178,9 @@ class Complex(visions.VisionsBaseType):
     def get_relations():
         return [IdentityRelation(Numeric)]
 
-    @classmethod
-    @nullable_series_contains
-    def contains_op(cls, series: pd.Series, state: dict) -> bool:
+    @staticmethod
+    @series_handle_nulls
+    def contains_op(series: pd.Series, state: dict) -> bool:
         return pdt.is_complex_dtype(series)
 
 

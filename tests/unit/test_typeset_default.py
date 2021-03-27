@@ -2,7 +2,6 @@ import os
 
 import pandas as pd
 import pytest
-
 from visions.test.series import get_series
 from visions.test.utils import (
     contains,
@@ -61,6 +60,7 @@ contains_map = {
         "complex_series_py_nan",
         "complex_series_nan_2",
         "complex_series_float",
+        "complex_series_py_float",
     },
     Categorical: {
         "categorical_float_series",
@@ -95,6 +95,8 @@ contains_map = {
         "str_float_non_leading_zeros",
         "str_int_zeros",
         "str_complex_nan",
+        "all_null_empty_str",
+        "py_datetime_str",
     },
     Boolean: {
         "bool_series",
@@ -110,6 +112,7 @@ contains_map = {
         "datetime",
         "timestamp_series_nat",
         "date_series_nat",
+        "all_null_nat",
     },
 }
 
@@ -155,11 +158,13 @@ contains_map[Unsupported] = {
     "ip_mixed_v4andv6",
     "email_address_missing",
     "email_address",
+    "all_null_none",
+    "all_null_nan",
 }
 
 
 @pytest.mark.parametrize(**get_contains_cases(series, contains_map, typeset))
-def test_contains(series, type, member):
+def test_contains(name, series, type, member):
     """Test the generated combinations for "series in type"
 
     Args:
@@ -168,7 +173,7 @@ def test_contains(series, type, member):
         member: the result
     """
     config["vars"]["num"]["low_categorical_threshold"].set(0)
-    result, message = contains(series, type, member)
+    result, message = contains(name, series, type, member)
     assert result, message
 
 
@@ -277,13 +282,19 @@ inference_map = {
     "str_complex_nan": Categorical,
     "email_address": Unsupported,
     "email_address_missing": Unsupported,
+    "all_null_nat": DateTime,
+    "all_null_empty_str": Categorical,
+    "py_datetime_str": Categorical,
+    "all_null_none": Unsupported,
+    "complex_series_py_float": Numeric,
+    "all_null_nan": Unsupported,
 }
 if int(pd.__version__[0]) >= 1:
     inference_map["string_dtype_series"] = Categorical
 
 
 @pytest.mark.parametrize(**get_inference_cases(series, inference_map, typeset))
-def test_inference(series, type, typeset, difference):
+def test_inference(name, series, type, typeset, difference):
     """Test the generated combinations for "inference(series) == type"
 
     Args:
@@ -291,7 +302,7 @@ def test_inference(series, type, typeset, difference):
         type: the type to test against
     """
     config["vars"]["num"]["low_categorical_threshold"].set(0)
-    result, message = infers(series, type, typeset, difference)
+    result, message = infers(name, series, type, typeset, difference)
     assert result, message
 
 
@@ -332,7 +343,7 @@ convert_map = [
 
 
 @pytest.mark.parametrize(**get_convert_cases(series, convert_map, typeset))
-def test_conversion(source_type, relation_type, series, member):
+def test_conversion(name, source_type, relation_type, series, member):
     """Test the generated combinations for "convert(series) == type" and "infer(series) = source_type"
 
     Args:
@@ -340,5 +351,5 @@ def test_conversion(source_type, relation_type, series, member):
         type: the type to test against
     """
     config["vars"]["num"]["low_categorical_threshold"].set(0)
-    result, message = convert(source_type, relation_type, series, member)
+    result, message = convert(name, source_type, relation_type, series, member)
     assert result, message
