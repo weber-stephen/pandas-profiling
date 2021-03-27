@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 import numpy as np
 import pandas as pd
 from pandas.core.arrays.integer import _IntegerDtype
-from visions.utils import func_nullable_series_contains
+from visions.backends.pandas.series_utils import series_handle_nulls as func_nullable_series_contains
 
 from pandas_profiling.config import config
 from pandas_profiling.model.summary_helpers import (
