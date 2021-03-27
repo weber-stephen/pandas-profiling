@@ -96,12 +96,11 @@ class Categorical(visions.VisionsBaseType):
 
 class Boolean(visions.VisionsBaseType):
     @staticmethod
-    def get_relations(cls):
+    def get_relations():
         # Numeric [0, 1] goes via Categorical with distinct_count_without_nan <= 2
         return [
             IdentityRelation(Unsupported),
             InferenceRelation(
-                cls,
                 Categorical,
                 relationship=string_is_bool,
                 transformer=lambda s, st: to_bool(string_to_bool(s, st)),
