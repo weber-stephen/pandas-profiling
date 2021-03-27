@@ -3,6 +3,7 @@ coverage<5
 codecov
 pytest-mypy
 pytest-cov
+git+https://github.com/sbrugman/pluggy.git@patch-1
 nbval
 pyarrow
 flake8
