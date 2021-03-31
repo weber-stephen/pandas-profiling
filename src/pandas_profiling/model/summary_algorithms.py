@@ -1,5 +1,5 @@
 import functools
-from typing import Tuple, TypeVar, Callable
+from typing import Callable, Tuple, TypeVar
 from urllib.parse import urlsplit
 
 import numpy as np
