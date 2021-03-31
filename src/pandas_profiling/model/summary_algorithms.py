@@ -21,9 +21,6 @@ from pandas_profiling.model.summary_helpers import (
 )
 
 
-T = TypeVar("T")
-
-
 def describe_counts(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
     """Counts the values in a series (with and without NaN, distinct).
 

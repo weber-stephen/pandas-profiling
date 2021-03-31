@@ -5,10 +5,10 @@ from urllib.parse import urlparse
 
 import pandas as pd
 import visions
+from multimethod import multimethod
 from pandas.api import types as pdt
 from visions.backends.pandas.series_utils import series_handle_nulls, series_not_empty
 from visions.relations import IdentityRelation, InferenceRelation
-from multimethod import multimethod
 
 from pandas_profiling.config import config
 from pandas_profiling.model.typeset_relations import (
