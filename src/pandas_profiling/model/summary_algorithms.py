@@ -1,11 +1,10 @@
 import functools
-from typing import Tuple
+from typing import Tuple,  TypeVar
 from urllib.parse import urlsplit
 
 import numpy as np
 import pandas as pd
 from pandas.core.arrays.integer import _IntegerDtype
-from visions.backends.pandas.series_utils import series_handle_nulls
 
 from pandas_profiling.config import config
 from pandas_profiling.model.summary_helpers import (
@@ -20,6 +19,9 @@ from pandas_profiling.model.summary_helpers import (
     url_summary,
     word_summary,
 )
+
+
+T = TypeVar('T')
 
 
 def describe_counts(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
@@ -70,6 +72,19 @@ def series_hashable(fn):
         if not summary["hashable"]:
             return series, summary
         return fn(series, summary)
+
+    return inner
+
+
+def series_handle_nulls(fn: Callable[..., T]) -> Callable[..., T]:
+    """Decorator for nullable series"""
+
+    @functools.wraps(fn)
+    def inner(series: pd.Series, *args, **kwargs) -> T:
+        if series.hasnans:
+            series = series.dropna()
+
+        return fn(series, *args, **kwargs)
 
     return inner
 

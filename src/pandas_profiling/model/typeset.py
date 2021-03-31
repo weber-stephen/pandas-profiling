@@ -8,6 +8,7 @@ import visions
 from pandas.api import types as pdt
 from visions.backends.pandas.series_utils import series_handle_nulls, series_not_empty
 from visions.relations import IdentityRelation, InferenceRelation
+from multimethod import multimethod
 
 from pandas_profiling.config import config
 from pandas_profiling.model.typeset_relations import (
@@ -39,6 +40,7 @@ class Numeric(visions.VisionsBaseType):
         ]
 
     @staticmethod
+    @multimethod
     @series_not_empty
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
@@ -65,6 +67,7 @@ class DateTime(visions.VisionsBaseType):
         ]
 
     @staticmethod
+    @multimethod
     def contains_op(series: pd.Series, state: dict) -> bool:
         return pdt.is_datetime64_any_dtype(series)
 
@@ -82,6 +85,7 @@ class Categorical(visions.VisionsBaseType):
         ]
 
     @staticmethod
+    @multimethod
     @series_not_empty
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
@@ -108,6 +112,7 @@ class Boolean(visions.VisionsBaseType):
         ]
 
     @staticmethod
+    @multimethod
     @series_not_empty
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
@@ -126,6 +131,7 @@ class URL(visions.VisionsBaseType):
         return [IdentityRelation(Categorical)]
 
     @staticmethod
+    @multimethod
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
         # TODO: use coercion utils
@@ -142,6 +148,7 @@ class Path(visions.VisionsBaseType):
         return [IdentityRelation(Categorical)]
 
     @staticmethod
+    @multimethod
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
         # TODO: use coercion utils
@@ -157,6 +164,7 @@ class File(visions.VisionsBaseType):
         return [IdentityRelation(Path)]
 
     @staticmethod
+    @multimethod
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
         return all(os.path.exists(p) for p in series)
@@ -168,6 +176,7 @@ class Image(visions.VisionsBaseType):
         return [IdentityRelation(File)]
 
     @staticmethod
+    @multimethod
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
         return all(imghdr.what(p) for p in series)
@@ -179,6 +188,7 @@ class Complex(visions.VisionsBaseType):
         return [IdentityRelation(Numeric)]
 
     @staticmethod
+    @multimethod
     @series_handle_nulls
     def contains_op(series: pd.Series, state: dict) -> bool:
         return pdt.is_complex_dtype(series)
