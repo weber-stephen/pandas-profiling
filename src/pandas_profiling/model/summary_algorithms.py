@@ -1,6 +1,5 @@
 import functools
-from typing import Tuple, Callable, Tuple
-
+from typing import Callable, Tuple
 from urllib.parse import urlsplit
 
 import numpy as np
