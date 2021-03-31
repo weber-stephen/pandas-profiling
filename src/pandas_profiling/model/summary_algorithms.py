@@ -1,5 +1,5 @@
 import functools
-from typing import Tuple, TypeVar, Callable
+from typing import Tuple, TypeVar, Callable, Tuple
 from urllib.parse import urlsplit
 
 import numpy as np
@@ -63,9 +63,9 @@ def describe_counts(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
     return series, summary
 
 
-def series_hashable(fn: Callable[pd.Series, dict]) -> Callable[pd.Series, dict]:
+def series_hashable(fn: Callable[[pd.Series, dict], Tuple[pd.Series, dict]]) -> Callable[[pd.Series, dict], Tuple[pd.Series, dict]]:
     @functools.wraps(fn)
-    def inner(series: pd.Series, summary: dict):
+    def inner(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
         if not summary["hashable"]:
             return series, summary
         return fn(series, summary)
@@ -73,11 +73,11 @@ def series_hashable(fn: Callable[pd.Series, dict]) -> Callable[pd.Series, dict]:
     return inner
 
 
-def series_handle_nulls(fn: Callable[pd.Series, dict]) -> Callable[pd.Series, dict]:
+def series_handle_nulls(fn: Callable[[pd.Series, dict], Tuple[pd.Series, dict]]) -> Callable[[pd.Series, dict], Tuple[pd.Series, dict]]:
     """Decorator for nullable series"""
 
     @functools.wraps(fn)
-    def inner(series: pd.Series, summary: dict) -> dict:
+    def inner(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
         if series.hasnans:
             series = series.dropna()
 
