@@ -1,5 +1,5 @@
 import functools
-from typing import Tuple,  TypeVar
+from typing import Tuple, TypeVar
 from urllib.parse import urlsplit
 
 import numpy as np
@@ -20,8 +20,7 @@ from pandas_profiling.model.summary_helpers import (
     word_summary,
 )
 
-
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def describe_counts(series: pd.Series, summary: dict) -> Tuple[pd.Series, dict]:
