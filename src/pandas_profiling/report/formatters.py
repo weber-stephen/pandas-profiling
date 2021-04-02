@@ -285,7 +285,9 @@ def get_fmt_mapping() -> Dict[str, Callable]:
         "fmt_percent": fmt_percent,
         "fmt_bytesize": fmt_bytesize,
         "fmt_timespan": fmt_timespan,
-        "fmt_numeric": partial(fmt_numeric, precision=config["report"]["precision"].get(int)),
+        "fmt_numeric": partial(
+            fmt_numeric, precision=config["report"]["precision"].get(int)
+        ),
         "fmt_number": fmt_number,
         "fmt_array": fmt_array,
         "fmt": fmt,
