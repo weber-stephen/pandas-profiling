@@ -12,7 +12,7 @@ from visions.test.utils import (
     infers,
 )
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.model.typeset import (
     Boolean,
     Categorical,
@@ -136,7 +136,13 @@ def get_profiling_series():
 
 series = get_profiling_series()
 
-typeset = ProfilingTypeSet()
+config = Settings()
+config.vars.num.low_categorical_threshold = 0
+my_typeset = ProfilingTypeSet(config)
+
+config2 = Settings()
+config2.vars.num.low_categorical_threshold = 2
+typeset2 = ProfilingTypeSet(config2)
 
 
 class DataTest:
@@ -190,7 +196,7 @@ contains_map = {
 }
 
 
-@pytest.mark.parametrize(**get_contains_cases(series, contains_map, typeset))
+@pytest.mark.parametrize(**get_contains_cases(series, contains_map, my_typeset))
 def test_contains(series, type, member):
     """Test the generated combinations for "series in type"
 
@@ -199,7 +205,6 @@ def test_contains(series, type, member):
         type: the type to test against
         member: the result
     """
-    config["vars"]["num"]["low_categorical_threshold"].set(0)
     result, message = contains(series, type, member)
     assert result, message
 
@@ -239,7 +244,7 @@ inference_map = {
 }
 
 
-@pytest.mark.parametrize(**get_inference_cases(series, inference_map, typeset))
+@pytest.mark.parametrize(**get_inference_cases(series, inference_map, my_typeset))
 def test_inference(series, type, typeset, difference):
     """Test the generated combinations for "inference(series) == type"
 
@@ -247,7 +252,6 @@ def test_inference(series, type, typeset, difference):
         series: the series to test
         type: the type to test against
     """
-    config["vars"]["num"]["low_categorical_threshold"].set(0)
     result, message = infers(series, type, typeset, difference)
     assert result, message
 
@@ -288,7 +292,7 @@ convert_map = [
 ]
 
 
-@pytest.mark.parametrize(**get_convert_cases(series, convert_map, typeset))
+@pytest.mark.parametrize(**get_convert_cases(series, convert_map, typeset2))
 def test_conversion(source_type, relation_type, series, member):
     """Test the generated combinations for "convert(series) == type" and "infer(series) = source_type"
 
@@ -296,6 +300,5 @@ def test_conversion(source_type, relation_type, series, member):
         series: the series to test
         source_type: the type to test against
     """
-    config["vars"]["num"]["low_categorical_threshold"].set(2)
     result, message = convert(source_type, relation_type, series, member)
     assert result, message

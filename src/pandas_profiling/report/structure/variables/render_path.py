@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import Container, FrequencyTable, Table
 from pandas_profiling.report.presentation.frequency_table_utils import freq_table
 from pandas_profiling.report.structure.variables.render_categorical import (
@@ -6,12 +6,12 @@ from pandas_profiling.report.structure.variables.render_categorical import (
 )
 
 
-def render_path(summary):
+def render_path(config: Settings, summary: dict):
     varid = summary["varid"]
-    n_freq_table_max = config["n_freq_table_max"].get(int)
-    redact = config["vars"]["cat"]["redact"].get(bool)
+    n_freq_table_max = config.n_freq_table_max
+    redact = config.vars.cat.redact
 
-    template_variables = render_categorical(summary)
+    template_variables = render_categorical(config, summary)
 
     keys = ["name", "parent", "suffix", "stem", "anchor"]
     for path_part in keys:

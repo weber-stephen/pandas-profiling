@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     Container,
     Image,
@@ -8,11 +8,11 @@ from pandas_profiling.report.presentation.core import (
 from pandas_profiling.visualisation.plot import histogram, mini_histogram
 
 
-def render_date(summary):
+def render_date(config: Settings, summary):
     varid = summary["varid"]
     template_variables = {}
 
-    image_format = config["plot"]["image_format"].get(str)
+    image_format = config.plot.image_format
 
     # Top
     info = VariableInfo(
@@ -66,7 +66,7 @@ def render_date(summary):
     )
 
     mini_histo = Image(
-        mini_histogram(*summary["histogram"], date=True),
+        mini_histogram(config, *summary["histogram"], date=True),
         image_format=image_format,
         alt="Mini histogram",
     )
@@ -79,7 +79,7 @@ def render_date(summary):
     bottom = Container(
         [
             Image(
-                histogram(*summary["histogram"], date=True),
+                histogram(config, *summary["histogram"], date=True),
                 image_format=image_format,
                 alt="Histogram",
                 caption=f"<strong>Histogram with fixed size bins</strong> (bins={len(summary['histogram'][1]) - 1})",

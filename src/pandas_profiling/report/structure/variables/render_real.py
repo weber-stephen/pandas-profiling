@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     Container,
     FrequencyTable,
@@ -6,14 +6,15 @@ from pandas_profiling.report.presentation.core import (
     Table,
     VariableInfo,
 )
+from pandas_profiling.report.presentation.core.renderable import Renderable
 from pandas_profiling.report.structure.variables.render_common import render_common
 from pandas_profiling.visualisation.plot import histogram, mini_histogram
 
 
-def render_real(summary):
+def render_real(config: Settings, summary: dict) -> Renderable:
     varid = summary["varid"]
-    template_variables = render_common(summary)
-    image_format = config["plot"]["image_format"].get(str)
+    template_variables = render_common(config, summary)
+    image_format = config.plot.image_format
 
     if summary["min"] >= 0:
         name = "Real number (&Ropf;<sub>&ge;0</sub>)"
@@ -124,7 +125,7 @@ def render_real(summary):
     )
 
     mini_histo = Image(
-        mini_histogram(*summary["histogram"]),
+        mini_histogram(config, *summary["histogram"]),
         image_format=image_format,
         alt="Mini histogram",
     )
@@ -196,7 +197,7 @@ def render_real(summary):
     )
 
     hist = Image(
-        histogram(*summary["histogram"]),
+        histogram(config, *summary["histogram"]),
         image_format=image_format,
         alt="Histogram",
         caption=f"<strong>Histogram with fixed size bins</strong> (bins={len(summary['histogram'][1]) - 1})",

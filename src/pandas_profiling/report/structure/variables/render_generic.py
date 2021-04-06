@@ -1,3 +1,4 @@
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     HTML,
     Container,
@@ -6,7 +7,7 @@ from pandas_profiling.report.presentation.core import (
 )
 
 
-def render_generic(summary):
+def render_generic(config: Settings, summary: dict):
     info = VariableInfo(
         anchor_id=summary["varid"],
         warnings=summary["warnings"],

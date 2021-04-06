@@ -1,12 +1,13 @@
 from typing import Optional
 from urllib.parse import quote
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.model.messages import MessageType
 from pandas_profiling.report.presentation.core import Container, Table, Warnings
+from pandas_profiling.report.presentation.core.renderable import Renderable
 
 
-def get_dataset_overview(summary):
+def get_dataset_overview(summary: dict) -> Renderable:
     table_metrics = [
         {
             "name": "Number of variables",
@@ -143,7 +144,7 @@ def get_dataset_reproduction(summary: dict):
             },
             {
                 "name": "Download configuration",
-                "value": f'<a download="config.yaml" href="data:text/plain;charset=utf-8,{config}">config.yaml</a>',
+                "value": f'<a download="config.json" href="data:text/plain;charset=utf-8,{config}">config.json</a>',
                 "fmt": "raw",
             },
         ],
@@ -199,7 +200,7 @@ def get_dataset_warnings(warnings: list) -> Warnings:
     return Warnings(warnings=warnings, name=f"Warnings ({count})", anchor_id="warnings")
 
 
-def get_dataset_items(summary: dict, warnings: list) -> list:
+def get_dataset_items(config: Settings, summary: dict, warnings: list) -> list:
     """Returns the dataset overview (at the top of the report)
 
     Args:
@@ -212,16 +213,14 @@ def get_dataset_items(summary: dict, warnings: list) -> list:
 
     items = [get_dataset_overview(summary)]
 
-    metadata = {
-        key: config["dataset"][key].get(str) for key in config["dataset"].keys()
-    }
+    metadata = {key: config.dataset.dict()[key] for key in config.dataset.dict().keys()}
 
     if len(metadata) > 0 and any(len(value) > 0 for value in metadata.values()):
         items.append(get_dataset_schema(metadata))
 
     column_details = {
-        key: config["variables"]["descriptions"][key].get(str)
-        for key in config["variables"]["descriptions"].keys()
+        key: config.variables.descriptions[key]
+        for key in config.variables.descriptions.keys()
     }
 
     if len(column_details) > 0:

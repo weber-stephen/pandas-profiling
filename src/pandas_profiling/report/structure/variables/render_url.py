@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     Container,
     FrequencyTable,
@@ -10,14 +10,14 @@ from pandas_profiling.report.presentation.frequency_table_utils import freq_tabl
 from pandas_profiling.report.structure.variables import render_common
 
 
-def render_url(summary):
+def render_url(config: Settings, summary):
     varid = summary["varid"]
-    n_freq_table_max = config["n_freq_table_max"].get(int)
+    n_freq_table_max = config.n_freq_table_max
 
-    n_obs_cat = config["vars"]["cat"]["n_obs"].get(int)
-    redact = config["vars"]["cat"]["redact"].get(bool)
+    n_obs_cat = config.vars.cat.n_obs
+    redact = config.vars.cat.redact
 
-    template_variables = render_common(summary)
+    template_variables = render_common(config, summary)
 
     keys = ["scheme", "netloc", "path", "query", "fragment"]
     for url_part in keys:

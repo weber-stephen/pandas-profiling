@@ -1,6 +1,6 @@
 import pandas as pd
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     Container,
     FrequencyTable,
@@ -12,12 +12,12 @@ from pandas_profiling.report.structure.variables.render_file import render_file
 from pandas_profiling.visualisation.plot import scatter_series
 
 
-def render_image(summary):
+def render_image(config: Settings, summary: dict):
     varid = summary["varid"]
-    n_freq_table_max = config["n_freq_table_max"].get(int)
-    redact = config["vars"]["cat"]["redact"].get(bool)
+    n_freq_table_max = config.n_freq_table_max
+    redact = config.vars.cat.redact
 
-    template_variables = render_file(summary)
+    template_variables = render_file(config, summary)
 
     # Top
     template_variables["top"].content["items"][0].content["var_type"] = "Image"
@@ -109,8 +109,8 @@ def render_image(summary):
             sequence_type="grid",
         ),
         Image(
-            scatter_series(summary["image_dimensions"]),
-            image_format=config["plot"]["image_format"].get(str),
+            scatter_series(config, summary["image_dimensions"]),
+            image_format=config.plot.image_format,
             alt="Scatter plot of image sizes",
             caption="Scatter plot of image sizes",
             name="Scatter plot",

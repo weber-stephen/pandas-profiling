@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.api import types as pdt
 from visions.utils import func_nullable_series_contains
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 
 
 def is_nullable(series, state) -> bool:
@@ -23,22 +23,22 @@ def try_func(fn):
     return inner
 
 
-def get_boolean_map():
+@functools.lru_cache()
+def get_boolean_map(mappings: list):
     bool_map = {}
-    for true_value, false_value in config["vars"]["bool"]["mappings"].get(list):
+    for true_value, false_value in mappings:
         bool_map[true_value] = True
         bool_map[false_value] = False
     return bool_map
 
 
-PP_bool_map = get_boolean_map()
-
-
-def string_is_bool(series, state) -> bool:
+def string_is_bool(series, state, config: Settings) -> bool:
     @func_nullable_series_contains
     @try_func
     def tester(s: pd.Series, state: dict) -> bool:
-        return s.str.lower().isin(PP_bool_map.keys()).all()
+        return (
+            s.str.lower().isin(get_boolean_map(config.vars.bool.mappings).keys()).all()
+        )
 
     if pdt.is_categorical_dtype(series):
         return False
@@ -46,13 +46,13 @@ def string_is_bool(series, state) -> bool:
     return tester(series, state)
 
 
-def string_to_bool(series, state):
-    return series.str.lower().map(PP_bool_map)
+def string_to_bool(series, state, config: Settings):
+    return series.str.lower().map(get_boolean_map(config.vars.bool.mappings))
 
 
-def numeric_is_category(series, state):
+def numeric_is_category(series, state, config: Settings):
     n_unique = series.nunique()
-    threshold = config["vars"]["num"]["low_categorical_threshold"].get(int)
+    threshold = config.vars.num.low_categorical_threshold
     return 1 <= n_unique <= threshold
 
 
@@ -73,7 +73,7 @@ def series_is_string(series: pd.Series, state: dict) -> bool:
 
 
 @func_nullable_series_contains
-def category_is_numeric(series, state):
+def category_is_numeric(series, state, config: Settings):
     if pdt.is_bool_dtype(series) or object_is_bool(series, state):
         return False
 
@@ -85,7 +85,7 @@ def category_is_numeric(series, state):
     except:
         return False
 
-    return not numeric_is_category(series, state)
+    return not numeric_is_category(series, state, config)
 
 
 def category_to_numeric(series, state):

@@ -1,6 +1,7 @@
 import imghdr
 import os
 import warnings
+from functools import partial
 from urllib.parse import urlparse
 
 import pandas as pd
@@ -10,7 +11,7 @@ from visions.relations import IdentityRelation, InferenceRelation
 from visions.utils import nullable_series_contains
 from visions.utils.series_utils import series_not_empty
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.model.typeset_relations import (
     category_is_numeric,
     category_to_numeric,
@@ -35,7 +36,7 @@ class Numeric(visions.VisionsBaseType):
             InferenceRelation(
                 cls,
                 Categorical,
-                relationship=category_is_numeric,
+                relationship=partial(category_is_numeric, config=cls.config),
                 transformer=category_to_numeric,
             ),
         ]
@@ -79,7 +80,7 @@ class Categorical(visions.VisionsBaseType):
             InferenceRelation(
                 cls,
                 Numeric,
-                relationship=numeric_is_category,
+                relationship=partial(numeric_is_category, config=cls.config),
                 transformer=to_category,
             ),
         ]
@@ -106,8 +107,8 @@ class Boolean(visions.VisionsBaseType):
             InferenceRelation(
                 cls,
                 Categorical,
-                relationship=string_is_bool,
-                transformer=lambda s, st: to_bool(string_to_bool(s, st)),
+                relationship=partial(string_is_bool, config=cls.config),
+                transformer=lambda s, st: to_bool(string_to_bool(s, st, cls.config)),
             ),
         ]
 
@@ -193,7 +194,9 @@ class Complex(visions.VisionsBaseType):
 
 
 class ProfilingTypeSet(visions.VisionsTypeset):
-    def __init__(self):
+    def __init__(self, config: Settings):
+        self.config = config
+
         types = {
             Unsupported,
             Boolean,
@@ -202,25 +205,20 @@ class ProfilingTypeSet(visions.VisionsTypeset):
             DateTime,
         }
 
-        if config["vars"]["path"]["active"].get(bool):
+        if config.vars.path.active:
             types.add(Path)
-            if config["vars"]["file"]["active"].get(bool):
+            if config.vars.file.active:
                 types.add(File)
-                if config["vars"]["image"]["active"].get(bool):
+                if config.vars.image.active:
                     types.add(Image)
 
-        if config["vars"]["url"]["active"].get(bool):
+        if config.vars.url.active:
             types.add(URL)
+
+        # Add config reference
+        for t in types:
+            t.config = config
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning)
             super().__init__(types)
-
-
-if __name__ == "__main__":
-    from matplotlib import pyplot as plt
-
-    config.set_arg_group("explorative")
-    ts = ProfilingTypeSet()
-    ts.plot_graph()
-    plt.show()

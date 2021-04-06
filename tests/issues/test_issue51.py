@@ -37,7 +37,8 @@ def test_issue51_similar():
     report = df.profile_report(
         title="Pandas Profiling Report", progress_bar=False, explorative=True
     )
-    report.set_variable("vars.num.low_categorical_threshold", 0)
+    report.config.vars.num.low_categorical_threshold = 0
+
     # FIXME: assert correlation values
     # print(report.get_description()["correlations"])
 
@@ -60,7 +61,7 @@ def test_issue51_empty():
         progress_bar=False,
         explorative=True,
     )
-    report.set_variable("vars.num.low_categorical_threshold", 0)
+    report.config.vars.num.low_categorical_threshold = 0
 
     assert (
         "cramers" not in report.get_description()["correlations"]
@@ -83,7 +84,7 @@ def test_issue51_identical():
     report = df.profile_report(
         title="Pandas Profiling Report", progress_bar=False, explorative=True
     )
-    report.set_variable("vars.num.low_categorical_threshold", 0)
+    report.config.vars.num.low_categorical_threshold = 0
 
     assert (
         report.get_description()["correlations"]["cramers"].values == np.ones((3, 3))

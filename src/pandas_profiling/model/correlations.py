@@ -8,31 +8,31 @@ import pandas as pd
 from pandas.core.base import DataError
 from scipy import stats
 
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.model.typeset import Boolean, Categorical, Numeric, Unsupported
 
 
 class Correlation:
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
-        return NotImplemented
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
+        raise NotImplementedError()
 
 
 class Spearman(Correlation):
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
         return df.corr(method="spearman")
 
 
 class Pearson(Correlation):
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
         return df.corr(method="pearson")
 
 
 class Kendall(Correlation):
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
         return df.corr(method="kendall")
 
 
@@ -67,8 +67,8 @@ class Cramers(Correlation):
         return corr
 
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
-        threshold = config["categorical_maximum_correlation_distinct"].get(int)
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
+        threshold = config.categorical_maximum_correlation_distinct
 
         categoricals = {
             key
@@ -99,8 +99,8 @@ class Cramers(Correlation):
 
 class PhiK(Correlation):
     @staticmethod
-    def compute(df, summary) -> Optional[pd.DataFrame]:
-        threshold = config["categorical_maximum_correlation_distinct"].get(int)
+    def compute(config: Settings, df, summary) -> Optional[pd.DataFrame]:
+        threshold = config.categorical_maximum_correlation_distinct
         intcols = {
             key
             for key, value in summary.items()
@@ -141,7 +141,7 @@ https://github.com/pandas-profiling/pandas-profiling/issues
 
 
 def calculate_correlation(
-    df: pd.DataFrame, correlation_name: str, summary: dict
+    config: Settings, df: pd.DataFrame, correlation_name: str, summary: dict
 ) -> Optional[pd.DataFrame]:
     """Calculate the correlation coefficients between variables for the correlation types selected in the config
     (pearson, spearman, kendall, phi_k, cramers).
@@ -168,7 +168,9 @@ def calculate_correlation(
 
     correlation = None
     try:
-        correlation = correlation_measures[correlation_name].compute(df, summary)
+        correlation = correlation_measures[correlation_name].compute(
+            config, df, summary
+        )
     except (ValueError, AssertionError, TypeError, DataError, IndexError) as e:
         warn_correlation(correlation_name, e)
 

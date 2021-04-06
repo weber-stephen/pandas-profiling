@@ -19,20 +19,27 @@ from pandas_profiling.model.typeset import (
 base_path = os.path.abspath(os.path.dirname(__file__))
 
 
-def test_summarizer():
-    pps = PandasProfilingSummarizer(typeset=ProfilingTypeSet())
+def test_summarizer(config):
+    pps = PandasProfilingSummarizer(typeset=ProfilingTypeSet(config))
 
-    _ = format_summary(pps.summarize(pd.Series([1, 2, 3, 4, 5]), Unsupported))
-    _ = format_summary(pps.summarize(pd.Series([1, 2, 3, 4, 5]), Numeric))
+    _ = format_summary(pps.summarize(config, pd.Series([1, 2, 3, 4, 5]), Unsupported))
+    _ = format_summary(pps.summarize(config, pd.Series([1, 2, 3, 4, 5]), Numeric))
     _ = format_summary(
         pps.summarize(
-            pd.Series(pd.date_range(start="1/1/2018", end="1/08/2018")), DateTime
+            config,
+            pd.Series(pd.date_range(start="1/1/2018", end="1/08/2018")),
+            DateTime,
         )
     )
-    _ = format_summary(pps.summarize(pd.Series(["abc", "abc", "abba"]), Categorical))
-    _ = format_summary(pps.summarize(pd.Series(["https://www.example.com"]), URL))
+    _ = format_summary(
+        pps.summarize(config, pd.Series(["abc", "abc", "abba"]), Categorical)
+    )
+    _ = format_summary(
+        pps.summarize(config, pd.Series(["https://www.example.com"]), URL)
+    )
     _ = format_summary(
         pps.summarize(
+            config,
             pd.Series(
                 [
                     os.path.abspath(
@@ -46,6 +53,7 @@ def test_summarizer():
     )
     _ = format_summary(
         pps.summarize(
+            config,
             pd.Series(
                 [
                     os.path.abspath(
@@ -58,6 +66,7 @@ def test_summarizer():
     )
     _ = format_summary(
         pps.summarize(
+            config,
             pd.Series(
                 [os.path.abspath(base_path + r"../../../docsrc/assets/lambda-labs.png")]
             ),
@@ -65,5 +74,5 @@ def test_summarizer():
         )
     )
     _ = format_summary(
-        pps.summarize(pd.Series([True, False, True, False, False]), Boolean)
+        pps.summarize(config, pd.Series([True, False, True, False, False]), Boolean)
     )

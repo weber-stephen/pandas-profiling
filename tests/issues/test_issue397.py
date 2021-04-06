@@ -24,6 +24,7 @@ def test_issue397():
     report = pandas_profiling.ProfileReport(
         df, vars={"num": {"low_categorical_threshold": 0}}
     )
+    assert report.config.vars.num.low_categorical_threshold == 0
 
     description = report.description_set
 

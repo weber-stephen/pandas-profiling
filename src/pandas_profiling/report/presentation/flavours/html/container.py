@@ -1,4 +1,3 @@
-from pandas_profiling.config import config
 from pandas_profiling.report.presentation.core.container import Container
 from pandas_profiling.report.presentation.flavours.html import templates
 
@@ -28,7 +27,7 @@ class HTMLContainer(Container):
         elif self.sequence_type == "sections":
             return templates.template("sequence/sections.html").render(
                 sections=self.content["items"],
-                full_width=config["html"]["style"]["full_width"].get(bool),
+                full_width=self.content["full_width"],
             )
         elif self.sequence_type == "grid":
             return templates.template("sequence/grid.html").render(

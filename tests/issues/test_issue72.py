@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 import pandas_profiling
-from pandas_profiling.config import config
 from pandas_profiling.model.typeset import Categorical, Numeric
 
 
@@ -15,7 +14,7 @@ def test_issue72_higher():
     df = pd.DataFrame({"A": [1, 2, 3, 3]})
     df["B"] = df["A"].apply(str)
     report = pandas_profiling.ProfileReport(df, correlations=None)
-    report.set_variable("vars.num.low_categorical_threshold", 2)
+    report.config.vars.num.low_categorical_threshold = 2
     # 3 > 2, so numerical
     assert report.get_description()["variables"]["A"]["type"] == Numeric
     # Strings are always categorical
@@ -41,7 +40,7 @@ def test_issue72_lower():
     df = pd.DataFrame({"A": [1, 2, 3, 3, np.nan]})
     df["B"] = df["A"].apply(str)
     report = df.profile_report(correlations=None)
-    report.set_variable("vars.num.low_categorical_threshold", 10)
+    report.config.vars.num.low_categorical_threshold = 10
 
     # 3 < 10, so categorical
     assert report.get_description()["variables"]["A"]["type"] == Categorical

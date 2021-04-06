@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     Container,
     FrequencyTable,
@@ -12,13 +12,13 @@ from pandas_profiling.report.structure.variables.render_common import render_com
 from pandas_profiling.visualisation.plot import pie_plot
 
 
-def render_boolean(summary):
+def render_boolean(config: Settings, summary: dict):
     varid = summary["varid"]
-    n_obs_bool = config["vars"]["bool"]["n_obs"].get(int)
-    image_format = config["plot"]["image_format"].get(str)
+    n_obs_bool = config.vars.bool.n_obs
+    image_format = config.plot.image_format.value
 
     # Prepare variables
-    template_variables = render_common(summary)
+    template_variables = render_common(config, summary)
 
     # Element composition
     info = VariableInfo(
@@ -84,11 +84,12 @@ def render_boolean(summary):
         )
     ]
 
-    max_unique = config["plot"]["pie"]["max_unique"].get(int)
+    max_unique = config.plot.pie.max_unique
     if max_unique > 0:
         items.append(
             Image(
                 pie_plot(
+                    config,
                     summary["value_counts_without_nan"],
                     legend_kws={"loc": "upper right"},
                 ),

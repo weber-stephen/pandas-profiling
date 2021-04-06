@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pandas_profiling import config
+from pandas_profiling.config import Settings
 from pandas_profiling.model.summarizer import PandasProfilingSummarizer
 from pandas_profiling.model.typeset import ProfilingTypeSet
 from pandas_profiling.utils.cache import cache_file
@@ -44,8 +44,13 @@ def summarizer(typeset):
 
 
 @pytest.fixture(scope="module")
-def typeset():
-    return ProfilingTypeSet()
+def config():
+    return Settings()
+
+
+@pytest.fixture(scope="module")
+def typeset(config):
+    return ProfilingTypeSet(config)
 
 
 def pytest_runtest_setup(item):
@@ -56,7 +61,3 @@ def pytest_runtest_setup(item):
     plat = sys.platform
     if supported_platforms and plat not in supported_platforms:
         pytest.skip(f"cannot run on platform {plat}")
-
-
-def pytest_runtest_teardown():
-    config.clear()

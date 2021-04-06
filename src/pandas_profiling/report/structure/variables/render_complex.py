@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.presentation.core import (
     HTML,
     Container,
@@ -9,10 +9,10 @@ from pandas_profiling.report.presentation.core import (
 from pandas_profiling.visualisation.plot import scatter_complex
 
 
-def render_complex(summary):
+def render_complex(config: Settings, summary: dict):
     varid = summary["varid"]
     template_variables = {}
-    image_format = config["plot"]["image_format"].get(str)
+    image_format = config.plot.image_format
 
     # Top
     info = VariableInfo(
@@ -64,7 +64,7 @@ def render_complex(summary):
     # Bottom
     items = [
         Image(
-            scatter_complex(summary["scatter_data"]),
+            scatter_complex(config, summary["scatter_data"]),
             image_format=image_format,
             alt="Scatterplot",
             caption="Scatterplot in the complex plane",

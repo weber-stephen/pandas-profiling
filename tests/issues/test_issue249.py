@@ -10,5 +10,5 @@ import pandas_profiling
 def test_issue249():
     df = pd.DataFrame(data=[[1], [2]], index=["foo", 1], columns=["a"])
     report = df.profile_report(explorative=True)
-    assert type(report.title) == str
+    assert type(report.config.title) == str
     assert len(report.to_html()) > 0

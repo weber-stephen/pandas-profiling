@@ -1,4 +1,4 @@
-from pandas_profiling.config import config
+from pandas_profiling.config import Settings
 from pandas_profiling.report.formatters import help
 from pandas_profiling.report.presentation.core import (
     Container,
@@ -13,7 +13,7 @@ from pandas_profiling.report.structure.variables.render_common import render_com
 from pandas_profiling.visualisation.plot import histogram, pie_plot
 
 
-def render_categorical_frequency(summary, varid, image_format):
+def render_categorical_frequency(config: Settings, summary, varid):
     frequency_table = Table(
         [
             {
@@ -34,8 +34,8 @@ def render_categorical_frequency(summary, varid, image_format):
     )
 
     frequencies = Image(
-        histogram(*summary["histogram_frequencies"]),
-        image_format=image_format,
+        histogram(config, *summary["histogram_frequencies"]),
+        image_format=config.plot.image_format,
         alt="frequencies histogram",
         name="Frequencies histogram",
         caption="Frequencies of value counts",
@@ -45,7 +45,7 @@ def render_categorical_frequency(summary, varid, image_format):
     return frequency_table, frequencies
 
 
-def render_categorical_length(summary, varid, image_format):
+def render_categorical_length(config, summary, varid):
     length_table = Table(
         [
             {
@@ -78,8 +78,8 @@ def render_categorical_length(summary, varid, image_format):
     )
 
     length_histo = Image(
-        histogram(*summary["histogram_length"]),
-        image_format=image_format,
+        histogram(config, *summary["histogram_length"]),
+        image_format=config.plot.image_format,
         alt="length histogram",
         name="Length",
         caption="Histogram of lengths of the category",
@@ -89,8 +89,8 @@ def render_categorical_length(summary, varid, image_format):
     return length_table, length_histo
 
 
-def render_categorical_unicode(summary, varid, redact):
-    n_freq_table_max = config["n_freq_table_max"].get(int)
+def render_categorical_unicode(config: Settings, summary, varid):
+    n_freq_table_max = config.n_freq_table_max
 
     category_overview = FrequencyTable(
         freq_table(
@@ -117,7 +117,7 @@ def render_categorical_unicode(summary, varid, redact):
                 ),
                 name=f"{category_alias_name}",
                 anchor_id=f"{varid}category_alias_values_{category_alias_name}",
-                redact=redact,
+                redact=config.vars.cat.redact,
             )
         )
 
@@ -156,7 +156,7 @@ def render_categorical_unicode(summary, varid, redact):
                 ),
                 name=f"{script_name}",
                 anchor_id=f"{varid}script_values_{script_name}",
-                redact=redact,
+                redact=config.vars.cat.redact,
             )
         )
 
@@ -193,7 +193,7 @@ def render_categorical_unicode(summary, varid, redact):
                 ),
                 name=f"{block_name}",
                 anchor_id=f"{varid}block_alias_values_{block_name}",
-                redact=redact,
+                redact=config.vars.cat.redact,
             )
         )
 
@@ -256,7 +256,7 @@ def render_categorical_unicode(summary, varid, redact):
                     ),
                     name="Most occurring characters",
                     anchor_id=f"{varid}character_frequency",
-                    redact=redact,
+                    redact=config.vars.cat.redact,
                 ),
             ],
             name="Characters",
@@ -291,16 +291,15 @@ def render_categorical_unicode(summary, varid, redact):
     )
 
 
-def render_categorical(summary):
+def render_categorical(config: Settings, summary: dict):
     varid = summary["varid"]
-    n_obs_cat = config["vars"]["cat"]["n_obs"].get(int)
-    image_format = config["plot"]["image_format"].get(str)
-    redact = config["vars"]["cat"]["redact"].get(bool)
-    words = config["vars"]["cat"]["words"].get(bool)
-    characters = config["vars"]["cat"]["characters"].get(bool)
-    length = config["vars"]["cat"]["length"].get(bool)
+    n_obs_cat = config.vars.cat.n_obs
+    image_format = config.plot.image_format
+    words = config.vars.cat.words
+    characters = config.vars.cat.characters
+    length = config.vars.cat.length
 
-    template_variables = render_common(summary)
+    template_variables = render_common(config, summary)
 
     info = VariableInfo(
         summary["varid"],
@@ -351,7 +350,7 @@ def render_categorical(summary):
             n=summary["count"],
             max_number_to_print=n_obs_cat,
         ),
-        redact=redact,
+        redact=config.vars.cat.redact,
     )
 
     template_variables["top"] = Container([info, table, fqm], sequence_type="grid")
@@ -362,28 +361,24 @@ def render_categorical(summary):
         template_variables["freq_table_rows"],
         name="Common Values",
         anchor_id=f"{varid}common_values",
-        redact=redact,
+        redact=config.vars.cat.redact,
     )
 
-    unique_stats, value_counts = render_categorical_frequency(
-        summary, varid, image_format
-    )
+    unique_stats, value_counts = render_categorical_frequency(config, summary, varid)
 
     overview_items = []
 
     if length:
-        length_table, length_histo = render_categorical_length(
-            summary, varid, image_format
-        )
+        length_table, length_histo = render_categorical_length(config, summary, varid)
         overview_items.append(length_table)
 
     if characters:
-        overview_table_char, unitab = render_categorical_unicode(summary, varid, redact)
+        overview_table_char, unitab = render_categorical_unicode(config, summary, varid)
         overview_items.append(overview_table_char)
 
     overview_items.append(unique_stats)
 
-    if not redact:
+    if not config.vars.cat.redact:
         rows = ("1st row", "2nd row", "3rd row", "4th row", "5th row")
 
         sample = Table(
@@ -404,11 +399,12 @@ def render_categorical(summary):
     if length:
         string_items.append(length_histo)
 
-    max_unique = config["plot"]["pie"]["max_unique"].get(int)
+    max_unique = config.plot.pie.max_unique
     if max_unique > 0 and summary["n_distinct"] <= max_unique:
         string_items.append(
             Image(
                 pie_plot(
+                    config,
                     summary["value_counts_without_nan"],
                     legend_kws={"loc": "upper right"},
                 ),
@@ -448,7 +444,7 @@ def render_categorical(summary):
             woc,
             name="Common words",
             anchor_id=f"{varid}cwo",
-            redact=redact,
+            redact=config.vars.cat.redact,
         )
 
         bottom_items.append(

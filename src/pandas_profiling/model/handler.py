@@ -14,7 +14,7 @@ def compose(functions):
     :return: combined functions, e.g. [f(x), g(x)] -> g(f(x))
     """
 
-    def func(f, g):
+    def func(f: Callable, g: Callable):
         def func2(*x):
             res = g(*x)
             if type(res) == bool:

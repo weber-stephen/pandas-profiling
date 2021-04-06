@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from visions import VisionsBaseType
 
+from pandas_profiling.config import Settings
 from pandas_profiling.model.handler import Handler
 from pandas_profiling.model.summary_algorithms import (
     describe_categorical_1d,
@@ -36,13 +37,15 @@ class BaseSummarizer(Handler):
     Can be used to define custom summarizations
     """
 
-    def summarize(self, series: pd.Series, dtype: Type[VisionsBaseType]) -> dict:
+    def summarize(
+        self, config: Settings, series: pd.Series, dtype: Type[VisionsBaseType]
+    ) -> dict:
         """
 
         Returns:
             object:
         """
-        _, summary = self.handle(dtype, series, {"type": dtype})
+        _, _, summary = self.handle(dtype, config, series, {"type": dtype})
         return summary
 
 

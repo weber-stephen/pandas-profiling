@@ -32,6 +32,10 @@ class ExpectationHandler(Handler):
 
 
 class ExpectationsReport:
+    config = None
+    typeset = None
+    df = None
+
     def to_expectation_suite(
         self,
         suite_name=None,
@@ -65,7 +69,7 @@ class ExpectationsReport:
 
         # Use report title if suite is empty
         if suite_name is None:
-            suite_name = slugify(self.title)
+            suite_name = slugify(self.config.title)
 
         # Use the default handler if none
         if handler is None:
