@@ -4,7 +4,7 @@ import multiprocessing
 import multiprocessing.pool
 import warnings
 from collections import Counter
-from typing import Callable, Mapping, Tuple
+from typing import Callable, Mapping, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -31,7 +31,10 @@ def describe_1d(
     """Describe a series (infer the variable type, then calculate type-specific values).
 
     Args:
+        config: Settings
         series: The Series to describe.
+        summarizer: Summarizer object
+        typeset: Typeset
 
     Returns:
         A Series containing calculated series description values.
