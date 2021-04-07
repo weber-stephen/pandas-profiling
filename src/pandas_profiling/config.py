@@ -53,6 +53,7 @@ class CatVars(BaseModel):
     chi_squared_threshold = 0.999
     coerce_str_to_date = False
     redact = False
+    histogram_largest: int = 50
 
 
 class BoolVars(BaseModel):

@@ -328,7 +328,7 @@ def describe_categorical_1d(
 
     # Only run if at least 1 non-missing value
     value_counts = summary["value_counts_without_nan"]
-    histogram_largest = config["vars"]["cat"]["histogram_largest"].get(int)
+    histogram_largest = config.vars.cat.histogram_largest
     histogram_data = value_counts
     if histogram_largest > 0:
         histogram_data = histogram_data.nlargest(histogram_largest)
