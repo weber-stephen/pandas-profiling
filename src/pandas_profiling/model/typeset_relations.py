@@ -23,22 +23,11 @@ def try_func(fn):
     return inner
 
 
-@functools.lru_cache()
-def get_boolean_map(mappings: list):
-    bool_map = {}
-    for true_value, false_value in mappings:
-        bool_map[true_value] = True
-        bool_map[false_value] = False
-    return bool_map
-
-
 def string_is_bool(series, state, config: Settings) -> bool:
     @func_nullable_series_contains
     @try_func
     def tester(s: pd.Series, state: dict) -> bool:
-        return (
-            s.str.lower().isin(get_boolean_map(config.vars.bool.mappings).keys()).all()
-        )
+        return s.str.lower().isin(config.vars.bool.mappings.keys()).all()
 
     if pdt.is_categorical_dtype(series):
         return False
@@ -47,7 +36,7 @@ def string_is_bool(series, state, config: Settings) -> bool:
 
 
 def string_to_bool(series, state, config: Settings):
-    return series.str.lower().map(get_boolean_map(config.vars.bool.mappings))
+    return series.str.lower().map(config.vars.bool.mappings)
 
 
 def numeric_is_category(series, state, config: Settings):

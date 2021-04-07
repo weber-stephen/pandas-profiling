@@ -59,13 +59,17 @@ class CatVars(BaseModel):
 class BoolVars(BaseModel):
     n_obs: int = 3
 
-    # string to boolean mappings pairs (true, false)
-    mappings = [
-        ["t", "f"],
-        ["yes", "no"],
-        ["y", "n"],
-        ["true", "false"],
-    ]
+    # string to boolean mapping dict
+    mappings = {
+        "t": True,
+        "f": False,
+        "yes": True,
+        "no": False,
+        "y": True,
+        "n": False,
+        "true": True,
+        "false": False,
+    }
 
 
 class FileVars(BaseModel):
