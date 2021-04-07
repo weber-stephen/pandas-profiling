@@ -38,17 +38,17 @@ def test_output_dir(tmpdir_factory):
     shutil.rmtree(str(test_path))
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def summarizer(typeset):
     return PandasProfilingSummarizer(typeset)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def config():
     return Settings()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def typeset(config):
     return ProfilingTypeSet(config)
 

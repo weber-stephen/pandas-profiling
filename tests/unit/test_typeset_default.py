@@ -487,9 +487,9 @@ def get_series():
 
 series = get_series()
 
-config = Settings()
-config.vars.num.low_categorical_threshold = 0
-my_typeset = ProfilingTypeSet(config)
+my_config = Settings()
+my_config.vars.num.low_categorical_threshold = 0
+my_typeset_default = ProfilingTypeSet(my_config)
 
 contains_map = {
     Numeric: {
@@ -613,7 +613,7 @@ contains_map[Unsupported] = {
 }
 
 
-@pytest.mark.parametrize(**get_contains_cases(series, contains_map, my_typeset))
+@pytest.mark.parametrize(**get_contains_cases(series, contains_map, my_typeset_default))
 def test_contains(series, type, member):
     """Test the generated combinations for "series in type"
 
@@ -736,7 +736,9 @@ if int(pd.__version__[0]) >= 1:
     inference_map["string_dtype_series"] = Categorical
 
 
-@pytest.mark.parametrize(**get_inference_cases(series, inference_map, my_typeset))
+@pytest.mark.parametrize(
+    **get_inference_cases(series, inference_map, my_typeset_default)
+)
 def test_inference(series, type, typeset, difference):
     """Test the generated combinations for "inference(series) == type"
 
@@ -784,7 +786,7 @@ convert_map = [
 ]
 
 
-@pytest.mark.parametrize(**get_convert_cases(series, convert_map, my_typeset))
+@pytest.mark.parametrize(**get_convert_cases(series, convert_map, my_typeset_default))
 def test_conversion(source_type, relation_type, series, member):
     """Test the generated combinations for "convert(series) == type" and "infer(series) = source_type"
 
